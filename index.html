@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>鱼子绘图 Pro - 专业AI艺术创作平台 | Contact: 2116498608@qq.com</title>
+    <title>鱼子绘图 Pro - Advanced AI Art Creation | Contact: 2116498608@qq.com</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- 引入字体和图标 -->
+    <!-- 字体和样式 -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
@@ -18,593 +18,429 @@
             --text-color: #4A4A4A;       /* 温和黑 */
             --border-radius: 12px;
             --shadow: 0 4px 20px rgba(0,0,0,0.05);
+            --tab-height: 40px;
+            --sidebar-width: 300px;
         }
 
+        /* 基础样式 */
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background-color: var(--background-color);
             color: var(--text-color);
             line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
         }
 
-        .nordic-container {
-            max-width: 1600px;
-            margin: 2rem auto;
-            padding: 0 2rem;
+        /* 主布局 */
+        .app-container {
+            display: flex;
+            min-height: 100vh;
         }
 
-        .nordic-card {
+        /* 侧边栏 */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: white;
+            border-right: 1px solid var(--secondary-color);
+            padding: 20px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        /* 主内容区 */
+        .main-content {
+            margin-left: var(--sidebar-width);
+            flex: 1;
+            padding: 20px;
+            background: var(--background-color);
+        }
+
+        /* 选项卡样式 */
+        .tab-container {
             background: white;
             border-radius: var(--border-radius);
             box-shadow: var(--shadow);
-            padding: 2rem;
-            margin-bottom: 1.5rem;
-            border: 1px solid rgba(0,0,0,0.05);
+            margin-bottom: 20px;
         }
 
-        .header-section {
-            text-align: center;
-            margin-bottom: 2rem;
-            padding: 2rem 0;
+        .tab-header {
+            display: flex;
+            border-bottom: 1px solid var(--secondary-color);
+            padding: 0 20px;
+            height: var(--tab-height);
         }
 
-        .header-section h1 {
-            font-size: 2.5rem;
-            font-weight: 600;
-            color: var(--primary-color);
-            margin-bottom: 0.5rem;
-        }
-
-        .header-section p {
+        .tab-button {
+            padding: 0 20px;
+            height: var(--tab-height);
+            line-height: var(--tab-height);
+            border: none;
+            background: none;
+            cursor: pointer;
             color: var(--text-color);
-            opacity: 0.8;
+            position: relative;
         }
 
+        .tab-button.active {
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--primary-color);
+        }
+
+        /* 参数面板 */
+        .parameter-panel {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        /* 输入框样式 */
         .prompt-textarea {
             width: 100%;
-            min-height: 120px;
-            padding: 1rem;
+            min-height: 100px;
+            padding: 12px;
             border: 1px solid var(--secondary-color);
             border-radius: var(--border-radius);
             font-family: 'Inter', monospace;
             resize: vertical;
-            transition: all 0.3s ease;
+            margin-bottom: 10px;
         }
 
-        .prompt-textarea:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px rgba(148, 166, 132, 0.2);
-            outline: none;
-        }
-
-        .settings-panel {
+        /* 滑块样式 */
+        .range-slider {
+            width: 100%;
+            height: 4px;
             background: var(--secondary-color);
-            padding: 1.5rem;
-            border-radius: var(--border-radius);
-            margin: 1rem 0;
+            border-radius: 2px;
+            -webkit-appearance: none;
         }
 
-        .nordic-button {
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 0 0 1px var(--primary-color);
+        }
+
+        /* 按钮样式 */
+        .action-button {
             background: var(--primary-color);
             color: white;
             border: none;
-            padding: 0.8rem 1.5rem;
+            padding: 10px 20px;
             border-radius: var(--border-radius);
+            cursor: pointer;
             font-weight: 500;
             transition: all 0.3s ease;
         }
 
-        .nordic-button:hover {
+        .action-button:hover {
             background: var(--accent-color);
             transform: translateY(-1px);
         }
 
-        .style-tag {
-            display: inline-block;
-            padding: 0.5rem 1rem;
-            margin: 0.3rem;
-            background: var(--secondary-color);
-            border-radius: 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
+        /* 设置组样式 */
+        .settings-group {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--secondary-color);
         }
 
-        .style-tag:hover {
-            background: var(--primary-color);
-            color: white;
+        .settings-group:last-child {
+            border-bottom: none;
         }
 
-        .image-preview {
-            width: 100%;
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            position: relative;
-        }
-
-        .image-preview img {
-            width: 100%;
-            height: auto;
+        /* 标签样式 */
+        .label {
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--text-color);
             display: block;
         }
 
-        .control-label {
-            font-weight: 500;
-            margin-bottom: 0.5rem;
-            color: var(--text-color);
-        }
-
-        .slider-control {
+        /* 下拉菜单样式 */
+        .select {
             width: 100%;
-            height: 5px;
-            border-radius: 5px;
-            -webkit-appearance: none;
-            appearance: none;
-            background: var(--secondary-color);
-            outline: none;
-        }
-
-        .slider-control::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 15px;
-            height: 15px;
-            border-radius: 50%;
-            background: var(--primary-color);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .slider-control::-webkit-slider-thumb:hover {
-            transform: scale(1.2);
-        }
-
-        .model-select {
-            width: 100%;
-            padding: 0.8rem;
+            padding: 8px 12px;
             border: 1px solid var(--secondary-color);
             border-radius: var(--border-radius);
             background: white;
             color: var(--text-color);
         }
 
+        /* 生成结果区域 */
+        .result-area {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .result-image {
+            width: 100%;
+            border-radius: var(--border-radius);
+            margin-bottom: 10px;
+        }
+
+        /* 快速设置按钮 */
+        .quick-setting {
+            display: inline-block;
+            padding: 6px 12px;
+            margin: 4px;
+            background: var(--secondary-color);
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.2s ease;
+        }
+
+        .quick-setting:hover {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        /* 工具提示 */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltip-text {
+            visibility: hidden;
+            width: 200px;
+            background-color: rgba(0,0,0,0.8);
+            color: white;
+            text-align: center;
+            padding: 5px;
+            border-radius: 6px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -100px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .tooltip:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* 状态指示器 */
         .status-indicator {
             position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            padding: 1rem 2rem;
-            background: rgba(255,255,255,0.9);
+            bottom: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background: white;
             border-radius: var(--border-radius);
             box-shadow: var(--shadow);
             z-index: 1000;
         }
 
-        .gallery-grid {
+        /* 批量生成网格 */
+        .batch-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
+            gap: 10px;
+            margin-top: 20px;
         }
 
-        .gallery-item {
+        .batch-item {
             position: relative;
             border-radius: var(--border-radius);
             overflow: hidden;
-            cursor: pointer;
         }
 
-        .gallery-item img {
+        .batch-item img {
             width: 100%;
             height: 200px;
             object-fit: cover;
             transition: transform 0.3s ease;
         }
 
-        .gallery-item:hover img {
+        .batch-item:hover img {
             transform: scale(1.05);
         }
 
-        .footer {
+        /* 新增的高级功能区域 */
+        .advanced-features {
+            margin-top: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .feature-item {
+            padding: 15px;
+            background: var(--secondary-color);
+            border-radius: var(--border-radius);
             text-align: center;
-            padding: 2rem 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .feature-item:hover {
+            background: var(--accent-color);
+            color: white;
+        }
+
+        /* 模型信息面板 */
+        .model-info {
+            padding: 15px;
+            background: var(--secondary-color);
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+        }
+
+        .model-info h6 {
+            margin: 0;
+            color: var(--text-color);
+        }
+
+        .model-info p {
+            margin: 5px 0 0;
+            font-size: 0.9em;
             color: var(--text-color);
             opacity: 0.8;
         }
+
+        /* 进度条 */
+        .progress-bar-container {
+            width: 100%;
+            height: 4px;
+            background: var(--secondary-color);
+            border-radius: 2px;
+            margin: 10px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--primary-color);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
     </style>
 </head>
 <body>
-    <!-- 状态指示器 -->
-    <div class="status-indicator" id="status-indicator" style="display: none;">
-        <i class="bi bi-circle-fill"></i> <span id="status-text">准备就绪</span>
-    </div>
+    <div class="app-container">
+        <!-- 左侧边栏 -->
+        <div class="sidebar">
+            <h4>🎨 鱼子绘图 Pro</h4>
+            <p class="text-muted">Contact: 2116498608@qq.com</p>
+            
+            <!-- 模型信息 -->
+            <div class="model-info">
+                <h6>当前模型</h6>
+                <p id="current-model">Stable Diffusion XL</p>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="generation-progress"></div>
+                </div>
+            </div>
 
-    <div class="nordic-container">
-        <!-- 头部 -->
-        <div class="header-section">
-            <h1>🎨 鱼子绘图 Pro</h1>
-            <p>专业的AI艺术创作平台 | Contact: 2116498608@qq.com</p>
+            <!-- 快速操作 -->
+            <div class="settings-group">
+                <div class="label">快速设置</div>
+                <div class="quick-setting" onclick="setQuality('high')">高质量预设</div>
+                <div class="quick-setting" onclick="setQuality('fast')">快速生成</div>
+                <div class="quick-setting" onclick="randomizeAll()">随机参数</div>
+            </div>
+
+            <!-- 生成历史 -->
+            <div class="settings-group">
+                <div class="label">最近生成</div>
+                <div id="history-list"></div>
+            </div>
         </div>
 
-        <div class="row">
-            <!-- 左侧控制面板 -->
-            <div class="col-lg-8">
-                <div class="nordic-card">
-                    <!-- 模型选择 -->
-                    <div class="mb-4">
-                        <label class="control-label">
-                            <i class="bi bi-box"></i> 选择模型
-                        </label>
-                        <select class="model-select" id="model-selector">
-                            <option value="sd15">Stable Diffusion 1.5</option>
-                            <option value="sd21">Stable Diffusion 2.1</option>
-                            <option value="sdxl">SDXL 1.0</option>
-                            <option value="anything">Anything V5</option>
-                            <option value="realistic">Realistic Vision V4</option>
-                            <option value="anime">Animagine XL</option>
-                        </select>
-                    </div>
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <!-- 选项卡 -->
+            <div class="tab-container">
+                <div class="tab-header">
+                    <button class="tab-button active" onclick="switchTab('txt2img')">文生图</button>
+                    <button class="tab-button" onclick="switchTab('img2img')">图生图</button>
+                    <button class="tab-button" onclick="switchTab('inpaint')">局部重绘</button>
+                    <button class="tab-button" onclick="switchTab('extras')">后期处理</button>
+                </div>
 
+                <!-- 主要参数面板 -->
+                <div class="parameter-panel">
                     <!-- 提示词区域 -->
-                    <div class="mb-4">
-                        <label class="control-label">
-                            <i class="bi bi-pencil"></i> 正向提示词
+                    <div class="settings-group">
+                        <label class="label">
+                            正向提示词
+                            <span class="tooltip">
+                                <i class="bi bi-question-circle"></i>
+                                <span class="tooltip-text">描述你想要的图片内容</span>
+                            </span>
                         </label>
                         <textarea class="prompt-textarea" id="positive-prompt" 
-                            placeholder="描述你想要的图片内容，例如：masterpiece, best quality, ultra-detailed, 8k, a beautiful landscape..."></textarea>
-                        
-                        <!-- 风格标签 -->
-                        <div class="mt-2">
-                            <div class="style-tag" onclick="addStyle('masterpiece, best quality')">顶级画质</div>
-                            <div class="style-tag" onclick="addStyle('ultra-detailed, 8k uhd')">超清细节</div>
-                            <div class="style-tag" onclick="addStyle('studio lighting, professional')">专业光效</div>
-                            <div class="style-tag" onclick="addStyle('award winning, trending')">获奖级别</div>
-                        </div>
-                    </div>
+                                placeholder="masterpiece, best quality, ultra-detailed..."></textarea>
 
-                    <!-- 反向提示词 -->
-                    <div class="mb-4">
-                        <label class="control-label">
-                            <i class="bi bi-x-circle"></i> 反向提示词
-                        </label>
+                        <label class="label">反向提示词</label>
                         <textarea class="prompt-textarea" id="negative-prompt" 
-                            placeholder="描述你不想要的元素，例如：lowres, bad anatomy, text, watermark..."></textarea>
+                                placeholder="lowres, bad anatomy, text, watermark..."></textarea>
                     </div>
 
-                    <!-- 高级设置面板 -->
-                    <div class="settings-panel">
+                    <!-- 采样设置 -->
+                    <div class="settings-group">
                         <div class="row">
                             <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="control-label">采样器选择</label>
-                                    <select class="model-select" id="sampler">
-                                        <option value="euler_a">Euler Ancestral</option>
-                                        <option value="dpm++">DPM++ 2M Karras</option>
-                                        <option value="ddim">DDIM</option>
-                                        <option value="dpm_sde">DPM++ SDE Karras</option>
-                                    </select>
-                                </div>
+                                <label class="label">采样方法</label>
+                                <select class="select" id="sampler">
+                                    <option value="Euler a">Euler a</option>
+                                    <option value="DPM++ 2M Karras">DPM++ 2M Karras</option>
+                                    <option value="DPM++ SDE Karras">DPM++ SDE Karras</option>
+                                    <option value="UniPC">UniPC</option>
+                                </select>
                             </div>
                             <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="control-label">采样步数: <span id="steps-value">30</span></label>
-                                    <input type="range" class="slider-control" id="steps" 
-                                           min="10" max="50" value="30">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="control-label">CFG Scale: <span id="cfg-value">7</span></label>
-                                    <input type="range" class="slider-control" id="cfg" 
-                                           min="1" max="20" step="0.5" value="7">
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="mb-3">
-                                    <label class="control-label">Seed</label>
-                                    <div class="input-group">
-                                        <input type="number" class="form-control" id="seed" value="-1">
-                                        <button class="btn btn-outline-secondary" onclick="randomSeed()">
-                                            <i class="bi bi-shuffle"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label class="control-label">宽度</label>
-                                    <select class="model-select" id="width">
-                                        <option value="512">512px</option>
-                                        <option value="768">768px</option>
-                                        <option value="1024">1024px</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label class="control-label">高度</label>
-                                    <select class="model-select" id="height">
-                                        <option value="512">512px</option>
-                                        <option value="768">768px</option>
-                                        <option value="1024">1024px</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="mb-3">
-                                    <label class="control-label">生成数量</label>
-                                    <select class="model-select" id="batch-count">
-                                        <option value="1">1张</option>
-                                        <option value="2">2张</option>
-                                        <option value="4">4张</option>
-                                    </select>
-                                </div>
+                                <label class="label">采样步数: <span id="steps-value">30</span></label>
+                                <input type="range" class="range-slider" id="steps" 
+                                       min="1" max="150" value="30">
                             </div>
                         </div>
                     </div>
 
-                    <!-- 生成按钮 -->
-                    <div class="d-grid gap-2 mt-4">
-                        <button class="nordic-button" onclick="generateImages()">
-                            <i class="bi bi-magic"></i> 开始生成
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 右侧预览面板 -->
-            <div class="col-lg-4">
-                <div class="nordic-card">
-                    <h5><i class="bi bi-image"></i> 图片预览</h5>
-                    <div class="image-preview" id="preview-container">
-                        <img id="preview-image" style="display: none;">
-                    </div>
-                    
-                    <!-- 批量预览网格 -->
-                    <div class="gallery-grid" id="gallery-grid"></div>
-                    
-                    <!-- 图片信息 -->
-                    <div class="mt-3" id="image-info" style="display: none;">
-                        <h6>生成信息</h6>
-                        <small class="text-muted" id="image-details"></small>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 底部信息 -->
-        <div class="footer">
-            <p>鱼子绘图 Pro v1.0 | Contact: 2116498608@qq.com</p>
-            <p>当前时间：<span id="current-time"></span></p>
-        </div>
-    </div>
-
-    <script>
-        // API配置
-const API_CONFIG = {
-    // 免费API端点集合
-    endpoints: {
-        pollinations: 'https://image.pollinations.ai/prompt/',
-        lexica: 'https://lexica.art/api/v1/search',
-        stabilityai: 'https://api.stability.ai/v1/generation',
-        prodia: 'https://api.prodia.com/v1/sd/generate',
-        // 添加更多免费API
-    },
-    
-    // API轮换系统
-    currentApiIndex: 0,
-    
-    // 获取下一个可用的API
-    getNextApi() {
-        const apis = Object.keys(this.endpoints);
-        this.currentApiIndex = (this.currentApiIndex + 1) % apis.length;
-        return apis[this.currentApiIndex];
-    }
-};
-
-// 更新时间显示
-function updateTime() {
-    const now = new Date();
-    const timeString = now.toISOString().replace('T', ' ').slice(0, 19);
-    document.getElementById('current-time').textContent = timeString;
-}
-setInterval(updateTime, 1000);
-updateTime();
-
-// 状态管理
-function showStatus(message, type = 'info') {
-    const indicator = document.getElementById('status-indicator');
-    const statusText = document.getElementById('status-text');
-    statusText.textContent = message;
-    indicator.style.display = 'block';
-    
-    // 设置状态样式
-    indicator.className = 'status-indicator';
-    if (type === 'error') {
-        indicator.style.backgroundColor = 'rgba(220, 53, 69, 0.9)';
-        indicator.style.color = 'white';
-    } else {
-        indicator.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
-        indicator.style.color = 'var(--text-color)';
-    }
-    
-    if (type !== 'error') {
-        setTimeout(() => {
-            indicator.style.display = 'none';
-        }, 3000);
-    }
-}
-
-// 添加风格标签
-function addStyle(style) {
-    const promptArea = document.getElementById('positive-prompt');
-    const currentPrompt = promptArea.value.trim();
-    promptArea.value = currentPrompt ? `${currentPrompt}, ${style}` : style;
-}
-
-// 随机种子
-function randomSeed() {
-    document.getElementById('seed').value = Math.floor(Math.random() * 2147483647);
-}
-
-// 更新滑块值显示
-document.getElementById('steps').addEventListener('input', function() {
-    document.getElementById('steps-value').textContent = this.value;
-});
-document.getElementById('cfg').addEventListener('input', function() {
-    document.getElementById('cfg-value').textContent = this.value;
-});
-
-// 生成图片主函数
-async function generateImages() {
-    showStatus('准备生成...');
-    
-    // 收集参数
-    const params = {
-        prompt: document.getElementById('positive-prompt').value,
-        negative_prompt: document.getElementById('negative-prompt').value,
-        model: document.getElementById('model-selector').value,
-        sampler: document.getElementById('sampler').value,
-        steps: document.getElementById('steps').value,
-        cfg_scale: document.getElementById('cfg').value,
-        seed: document.getElementById('seed').value,
-        width: document.getElementById('width').value,
-        height: document.getElementById('height').value,
-        batch_count: document.getElementById('batch-count').value
-    };
-
-    if (!params.prompt) {
-        showStatus('请输入提示词', 'error');
-        return;
-    }
-
-    try {
-        showStatus('正在生成图片...');
-        
-        // 使用API轮换系统生成图片
-        const images = await generateWithRotatingApis(params);
-        
-        // 显示生成的图片
-        displayGeneratedImages(images, params);
-        
-        showStatus('生成完成！');
-        
-        // 更新图片信息
-        updateImageInfo(params);
-        
-    } catch (error) {
-        console.error('Generation error:', error);
-        showStatus('生成失败，正在切换到备用API...', 'error');
-        
-        // 尝试使用备用API
-        try {
-            const backupImages = await generateWithBackupApi(params);
-            displayGeneratedImages(backupImages, params);
-            showStatus('使用备用API生成成功！');
-        } catch (backupError) {
-            showStatus('所有API生成失败，请稍后重试', 'error');
-        }
-    }
-}
-
-// API轮换生成系统
-async function generateWithRotatingApis(params) {
-    const images = [];
-    const batchCount = parseInt(params.batch_count);
-    
-    for (let i = 0; i < batchCount; i++) {
-        // 获取下一个可用的API
-        const currentApi = API_CONFIG.getNextApi();
-        
-        try {
-            let imageUrl;
-            
-            switch (currentApi) {
-                case 'pollinations':
-                    // Pollinations.ai API
-                    const encodedPrompt = encodeURIComponent(
-                        `${params.prompt} --no ${params.negative_prompt} --w ${params.width} --h ${params.height}`
-                    );
-                    imageUrl = `${API_CONFIG.endpoints.pollinations}${encodedPrompt}?seed=${Date.now() + i}`;
-                    break;
-                    
-                case 'lexica':
-                    // Lexica API - 搜索相似图片
-                    const response = await fetch(`${API_CONFIG.endpoints.lexica}?q=${encodeURIComponent(params.prompt)}`);
-                    const data = await response.json();
-                    if (data.images && data.images.length > 0) {
-                        imageUrl = data.images[Math.floor(Math.random() * data.images.length)].url;
-                    }
-                    break;
-                    
-                default:
-                    // 默认备用方案
-                    imageUrl = `https://picsum.photos/${params.width}/${params.height}?random=${Date.now() + i}`;
-            }
-            
-            images.push(imageUrl);
-            
-        } catch (error) {
-            console.error(`API ${currentApi} failed:`, error);
-            // 如果当前API失败，使用备用
-            images.push(`https://picsum.photos/${params.width}/${params.height}?random=${Date.now() + i}`);
-        }
-    }
-    
-    return images;
-}
-
-// 显示生成的图片
-function displayGeneratedImages(images, params) {
-    const previewImage = document.getElementById('preview-image');
-    const galleryGrid = document.getElementById('gallery-grid');
-    
-    if (images.length === 1) {
-        // 单图显示
-        previewImage.src = images[0];
-        previewImage.style.display = 'block';
-        galleryGrid.innerHTML = '';
-    } else {
-        // 多图显示
-        previewImage.style.display = 'none';
-        galleryGrid.innerHTML = '';
-        
-        images.forEach(imageUrl => {
-            const imageCard = document.createElement('div');
-            imageCard.className = 'gallery-item';
-            imageCard.innerHTML = `
-                <img src="${imageUrl}" alt="生成的图片"
-                     onerror="this.src='https://via.placeholder.com/512x512?text=生成失败'">
-            `;
-            galleryGrid.appendChild(imageCard);
-        });
-    }
-}
-
-// 更新图片信息
-function updateImageInfo(params) {
-    const imageInfo = document.getElementById('image-info');
-    const imageDetails = document.getElementById('image-details');
-    
-    imageInfo.style.display = 'block';
-    imageDetails.innerHTML = `
-        <div class="mb-1">模型: ${params.model}</div>
-        <div class="mb-1">采样器: ${params.sampler}</div>
-        <div class="mb-1">步数: ${params.steps}</div>
-        <div class="mb-1">CFG Scale: ${params.cfg_scale}</div>
-        <div class="mb-1">种子: ${params.seed}</div>
-        <div class="mb-1">尺寸: ${params.width}x${params.height}</div>
-        <div class="mb-1">生成时间: ${new Date().toLocaleString()}</div>
-    `;
-}
-
-// 页面加载完成
-window.onload = function() {
-    showStatus('系统就绪');
-    updateTime();
-};
-            
+                    <!-- 生成参数 -->
+                    <div class="settings-group">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label class="label">CFG Scale: <span id="cfg-value">7</span></label>
+                                <input type="range" class="range-slider" id="cfg" 
+                                       min="1" max="30" step="0.5" value="7">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="label">Seed</label>
+                                <div
