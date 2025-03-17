@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-    <title>鱼子绘图 Pro - Advanced AI Art Creation | Contact: 2116498608@qq.com</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- 字体和样式 -->
+    <title>鱼子绘图 Pro - Advanced AI Art Creation | Contact: 2116498608@qq.com</title>
+    
+    <!-- 外部依赖 -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
-    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">    
     <style>
         :root {
             --primary-color: #94A684;    /* 奶油绿 */
@@ -22,7 +22,6 @@
             --sidebar-width: 300px;
         }
 
-        /* 基础样式 */
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background-color: var(--background-color);
@@ -33,13 +32,12 @@
             min-height: 100vh;
         }
 
-        /* 主布局 */
         .app-container {
             display: flex;
             min-height: 100vh;
         }
 
-        /* 侧边栏 */
+        /* 左侧边栏 */
         .sidebar {
             width: var(--sidebar-width);
             background: white;
@@ -48,6 +46,7 @@
             position: fixed;
             height: 100vh;
             overflow-y: auto;
+            z-index: 1000;
         }
 
         /* 主内容区 */
@@ -58,7 +57,7 @@
             background: var(--background-color);
         }
 
-        /* 选项卡样式 */
+        /* 标签系统 */
         .tab-container {
             background: white;
             border-radius: var(--border-radius);
@@ -70,7 +69,8 @@
             display: flex;
             border-bottom: 1px solid var(--secondary-color);
             padding: 0 20px;
-            height: var(--tab-height);
+            overflow-x: auto;
+            white-space: nowrap;
         }
 
         .tab-button {
@@ -82,6 +82,8 @@
             cursor: pointer;
             color: var(--text-color);
             position: relative;
+            white-space: nowrap;
+            transition: all 0.3s ease;
         }
 
         .tab-button.active {
@@ -108,16 +110,65 @@
             box-shadow: var(--shadow);
         }
 
-        /* 输入框样式 */
+        /* 输入区域 */
         .prompt-textarea {
             width: 100%;
-            min-height: 100px;
+            min-height: 120px;
             padding: 12px;
             border: 1px solid var(--secondary-color);
             border-radius: var(--border-radius);
             font-family: 'Inter', monospace;
             resize: vertical;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .prompt-textarea:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(148, 166, 132, 0.2);
+        }
+
+        /* 图片生成区域 */
+        .generation-area {
+            border: 2px dashed var(--secondary-color);
+            border-radius: var(--border-radius);
+            padding: 40px;
+            text-align: center;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            background: white;
+        }
+
+        .generation-area:hover {
+            border-color: var(--primary-color);
+            background: rgba(148, 166, 132, 0.05);
+        }
+
+        /* 按钮样式 */
+        .action-button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-align: center;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .action-button:hover {
+            background: var(--accent-color);
+            transform: translateY(-1px);
+        }
+
+        .action-button i {
+            font-size: 1.2em;
         }
 
         /* 滑块样式 */
@@ -140,82 +191,16 @@
             box-shadow: 0 0 0 1px var(--primary-color);
         }
 
-        /* 按钮样式 */
-        .action-button {
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .action-button:hover {
-            background: var(--accent-color);
-            transform: translateY(-1px);
-        }
-
-        /* 设置组样式 */
-        .settings-group {
-            margin-bottom: 20px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--secondary-color);
-        }
-
-        .settings-group:last-child {
-            border-bottom: none;
-        }
-
-        /* 标签样式 */
-        .label {
-            font-weight: 500;
-            margin-bottom: 8px;
-            color: var(--text-color);
-            display: block;
-        }
-
-        /* 下拉菜单样式 */
-        .select {
-            width: 100%;
-            padding: 8px 12px;
-            border: 1px solid var(--secondary-color);
-            border-radius: var(--border-radius);
-            background: white;
-            color: var(--text-color);
-        }
-
-        /* 生成结果区域 */
-        .result-area {
-            background: white;
-            border-radius: var(--border-radius);
-            padding: 20px;
+        /* 图片预览 */
+        .preview-container {
+            position: relative;
             margin-top: 20px;
-            box-shadow: var(--shadow);
         }
 
-        .result-image {
+        .preview-image {
             width: 100%;
             border-radius: var(--border-radius);
-            margin-bottom: 10px;
-        }
-
-        /* 快速设置按钮 */
-        .quick-setting {
-            display: inline-block;
-            padding: 6px 12px;
-            margin: 4px;
-            background: var(--secondary-color);
-            border-radius: 15px;
-            cursor: pointer;
-            font-size: 0.9em;
-            transition: all 0.2s ease;
-        }
-
-        .quick-setting:hover {
-            background: var(--accent-color);
-            color: white;
+            display: none;
         }
 
         /* 工具提示 */
@@ -246,113 +231,41 @@
             opacity: 1;
         }
 
-        /* 状态指示器 */
-        .status-indicator {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 10px 20px;
-            background: white;
+        /* 历史记录 */
+        .history-container {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
             border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-            z-index: 1000;
-        }
-
-        /* 批量生成网格 */
-        .batch-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .batch-item {
-            position: relative;
-            border-radius: var(--border-radius);
-            overflow: hidden;
-        }
-
-        .batch-item img {
-            width: 100%;
-            height: 200px;
-            object-fit: cover;
-            transition: transform 0.3s ease;
-        }
-
-        .batch-item:hover img {
-            transform: scale(1.05);
-        }
-
-        /* 新增的高级功能区域 */
-        .advanced-features {
-            margin-top: 20px;
-            padding: 20px;
-            background: white;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow);
-        }
-
-        .feature-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .feature-item {
-            padding: 15px;
-            background: var(--secondary-color);
-            border-radius: var(--border-radius);
-            text-align: center;
+            margin-bottom: 10px;
             cursor: pointer;
             transition: all 0.3s ease;
         }
 
-        .feature-item:hover {
-            background: var(--accent-color);
-            color: white;
+        .history-item:hover {
+            background: var(--secondary-color);
         }
 
-        /* 模型信息面板 */
-        .model-info {
-            padding: 15px;
-            background: var(--secondary-color);
+        .history-thumbnail {
+            width: 60px;
+            height: 60px;
             border-radius: var(--border-radius);
-            margin-bottom: 20px;
+            object-fit: cover;
+            margin-right: 10px;
         }
-
-        .model-info h6 {
-            margin: 0;
-            color: var(--text-color);
-        }
-
-        .model-info p {
-            margin: 5px 0 0;
-            font-size: 0.9em;
-            color: var(--text-color);
-            opacity: 0.8;
-        }
-
-        /* 进度条 */
-        .progress-bar-container {
-            width: 100%;
-            height: 4px;
-            background: var(--secondary-color);
-            border-radius: 2px;
-            margin: 10px 0;
-            overflow: hidden;
-        }
-
-        .progress-bar {
-            height: 100%;
-            background: var(--primary-color);
-            width: 0%;
-            transition: width 0.3s ease;
-        }
-
     </style>
 </head>
 <body>
+    <!-- 状态提示 -->
+    <div id="status-badge" class="status-badge">
+        <i class="bi bi-circle-fill"></i> <span id="status-text">就绪</span>
+    </div>
+
     <div class="app-container">
         <!-- 左侧边栏 -->
         <div class="sidebar">
@@ -360,87 +273,447 @@
             <p class="text-muted">Contact: 2116498608@qq.com</p>
             
             <!-- 模型信息 -->
-            <div class="model-info">
+            <div class="parameter-panel">
                 <h6>当前模型</h6>
-                <p id="current-model">Stable Diffusion XL</p>
-                <div class="progress-bar-container">
+                <select class="form-select mb-2" id="model-selector">
+                    <option value="sdxl">Stable Diffusion XL</option>
+                    <option value="sd15">Stable Diffusion 1.5</option>
+                    <option value="anything5">Anything V5</option>
+                    <option value="realistic">Realistic Vision V4</option>
+                    <option value="anime">Animagine XL</option>
+                </select>
+                <div class="progress-container">
                     <div class="progress-bar" id="generation-progress"></div>
                 </div>
             </div>
 
-            <!-- 快速操作 -->
-            <div class="settings-group">
-                <div class="label">快速设置</div>
-                <div class="quick-setting" onclick="setQuality('high')">高质量预设</div>
-                <div class="quick-setting" onclick="setQuality('fast')">快速生成</div>
-                <div class="quick-setting" onclick="randomizeAll()">随机参数</div>
+            <!-- VAE选择 -->
+            <div class="parameter-panel">
+                <h6>VAE 模型</h6>
+                <select class="form-select" id="vae-selector">
+                    <option value="default">默认 VAE</option>
+                    <option value="kl-f8-anime2">kl-f8-anime2</option>
+                    <option value="vae-ft-mse-840000">vae-ft-mse-840000</option>
+                </select>
             </div>
 
-            <!-- 生成历史 -->
-            <div class="settings-group">
-                <div class="label">最近生成</div>
-                <div id="history-list"></div>
+            <!-- 快速设置 -->
+            <div class="parameter-panel">
+                <h6>快速设置</h6>
+                <button class="action-button mb-2 w-100" onclick="applyPreset('highQuality')">
+                    <i class="bi bi-stars"></i> 高质量预设
+                </button>
+                <button class="action-button mb-2 w-100" onclick="applyPreset('fast')">
+                    <i class="bi bi-lightning"></i> 快速生成
+                </button>
+                <button class="action-button w-100" onclick="randomizeParams()">
+                    <i class="bi bi-shuffle"></i> 随机参数
+                </button>
+            </div>
+
+            <!-- 历史记录 -->
+            <div class="parameter-panel">
+                <h6>生成历史</h6>
+                <div id="history-list" class="history-container"></div>
             </div>
         </div>
 
         <!-- 主内容区 -->
         <div class="main-content">
-            <!-- 选项卡 -->
+            <!-- 标签页 -->
             <div class="tab-container">
                 <div class="tab-header">
-                    <button class="tab-button active" onclick="switchTab('txt2img')">文生图</button>
-                    <button class="tab-button" onclick="switchTab('img2img')">图生图</button>
-                    <button class="tab-button" onclick="switchTab('inpaint')">局部重绘</button>
-                    <button class="tab-button" onclick="switchTab('extras')">后期处理</button>
+                    <button class="tab-button active" data-tab="txt2img">文生图</button>
+                    <button class="tab-button" data-tab="img2img">图生图</button>
+                    <button class="tab-button" data-tab="inpaint">局部重绘</button>
+                    <button class="tab-button" data-tab="extras">后期处理</button>
+                    <button class="tab-button" data-tab="settings">设置</button>
                 </div>
 
-                <!-- 主要参数面板 -->
-                <div class="parameter-panel">
-                    <!-- 提示词区域 -->
-                    <div class="settings-group">
-                        <label class="label">
-                            正向提示词
-                            <span class="tooltip">
-                                <i class="bi bi-question-circle"></i>
-                                <span class="tooltip-text">描述你想要的图片内容</span>
-                            </span>
-                        </label>
-                        <textarea class="prompt-textarea" id="positive-prompt" 
-                                placeholder="masterpiece, best quality, ultra-detailed..."></textarea>
+                <!-- 主要内容区域 -->
+                <div class="tab-content" id="tab-content">
+                    <!-- 文生图面板 -->
+                    <div class="parameter-panel" id="txt2img-panel">
+                        <!-- 提示词区域 -->
+                        <div class="mb-4">
+                            <label class="form-label">
+                                正向提示词
+                                <span class="tooltip">
+                                    <i class="bi bi-question-circle"></i>
+                                    <span class="tooltip-text">描述你想要的图片内容</span>
+                                </span>
+                            </label>
+                            <textarea class="prompt-textarea" id="positive-prompt" 
+                                    placeholder="masterpiece, best quality, ultra-detailed..."></textarea>
 
-                        <label class="label">反向提示词</label>
-                        <textarea class="prompt-textarea" id="negative-prompt" 
-                                placeholder="lowres, bad anatomy, text, watermark..."></textarea>
-                    </div>
+                            <label class="form-label">反向提示词</label>
+                            <textarea class="prompt-textarea" id="negative-prompt" 
+                                    placeholder="lowres, bad anatomy, text, watermark..."></textarea>
+                        </div>
 
-                    <!-- 采样设置 -->
-                    <div class="settings-group">
+                        <!-- 生成参数 -->
                         <div class="row">
-                            <div class="col-md-6">
-                                <label class="label">采样方法</label>
-                                <select class="select" id="sampler">
-                                    <option value="Euler a">Euler a</option>
-                                    <option value="DPM++ 2M Karras">DPM++ 2M Karras</option>
-                                    <option value="DPM++ SDE Karras">DPM++ SDE Karras</option>
-                                    <option value="UniPC">UniPC</option>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">采样方法</label>
+                                <select class="form-select" id="sampler">
+                                    <option value="euler_a">Euler a</option>
+                                    <option value="dpm++">DPM++ 2M Karras</option>
+                                    <option value="dpm_sde">DPM++ SDE Karras</option>
+                                    <option value="ddim">DDIM</option>
+                                    <option value="unipc">UniPC</option>
                                 </select>
                             </div>
-                            <div class="col-md-6">
-                                <label class="label">采样步数: <span id="steps-value">30</span></label>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">采样步数: <span id="steps-value">30</span></label>
                                 <input type="range" class="range-slider" id="steps" 
                                        min="1" max="150" value="30">
                             </div>
                         </div>
-                    </div>
 
-                    <!-- 生成参数 -->
-                    <div class="settings-group">
                         <div class="row">
-                            <div class="col-md-4">
-                                <label class="label">CFG Scale: <span id="cfg-value">7</span></label>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">CFG Scale: <span id="cfg-value">7</span></label>
                                 <input type="range" class="range-slider" id="cfg" 
                                        min="1" max="30" step="0.5" value="7">
                             </div>
-                            <div class="col-md-4">
-                                <label class="label">Seed</label>
-                                <div
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Seed</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="seed" value="-1">
+                                    <button class="btn btn-outline-secondary" onclick="randomSeed()">
+                                        <i class="bi bi-shuffle"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">宽度</label>
+                                <select class="form-select" id="width">
+                                    <option value="512">512px</option>
+                                    <option value="768">768px</option>
+                                    <option value="1024">1024px</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">高度</label>
+                                <select class="form-select" id="height">
+                                    <option value="512">512px</option>
+                                    <option value="768">768px</option>
+                                    <option value="1024">1024px</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label class="form-label">生成数量</label>
+                                <select class="form-select" id="batch-count">
+                                    <option value="1">1张</option>
+                                    <option value="2">2张</option>
+                                    <option value="4">4张</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- 生成按钮 -->
+                        <div class="d-grid gap-2">
+                            <button class="action-button" onclick="generateImage()">
+                                <i class="bi bi-magic"></i> 开始生成
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 预览区域 -->
+                    <div class="parameter-panel">
+                        <h6>生成结果</h6>
+                        <div id="preview-container" class="preview-container">
+                            <img id="preview-image" class="preview-image">
+                        </div>
+                        <div id="batch-results" class="row mt-3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+        <!-- JavaScript 代码 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 全局配置
+        const CONFIG = {
+            apiEndpoints: {
+                pollinations: 'https://image.pollinations.ai/prompt/',
+                lexica: 'https://lexica.art/api/v1/search',
+                prodia: 'https://api.prodia.com/v1/sd/generate'
+            },
+            presets: {
+                highQuality: {
+                    steps: 50,
+                    cfgScale: 7,
+                    sampler: 'dpm++',
+                    width: 1024,
+                    height: 1024,
+                    model: 'sdxl'
+                },
+                fast: {
+                    steps: 20,
+                    cfgScale: 7,
+                    sampler: 'euler_a',
+                    width: 512,
+                    height: 512,
+                    model: 'sd15'
+                }
+            }
+        };
+
+        // 状态管理
+        function showStatus(message, type = 'info') {
+            const badge = document.getElementById('status-badge');
+            const text = document.getElementById('status-text');
+            text.textContent = message;
+            badge.style.display = 'block';
+            
+            if (type === 'error') {
+                badge.style.backgroundColor = 'rgba(220, 53, 69, 0.9)';
+                badge.style.color = 'white';
+            } else {
+                badge.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
+                badge.style.color = 'var(--text-color)';
+            }
+            
+            if (type !== 'error') {
+                setTimeout(() => {
+                    badge.style.display = 'none';
+                }, 3000);
+            }
+        }
+
+        // 标签页切换
+        function switchTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-button');
+            tabs.forEach(tab => {
+                if (tab.dataset.tab === tabName) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+
+            // 更新内容区域
+            updateTabContent(tabName);
+        }
+
+        // 更新标签页内容
+        function updateTabContent(tabName) {
+            const content = document.getElementById('tab-content');
+            // 这里可以根据不同的标签页名称加载不同的内容
+            showStatus(`切换到${tabName}模式`);
+        }
+
+        // 应用预设
+        function applyPreset(presetName) {
+            const preset = CONFIG.presets[presetName];
+            if (!preset) return;
+
+            // 应用预设参数
+            document.getElementById('steps').value = preset.steps;
+            document.getElementById('steps-value').textContent = preset.steps;
+            
+            document.getElementById('cfg').value = preset.cfgScale;
+            document.getElementById('cfg-value').textContent = preset.cfgScale;
+            
+            document.getElementById('sampler').value = preset.sampler;
+            document.getElementById('width').value = preset.width;
+            document.getElementById('height').value = preset.height;
+            document.getElementById('model-selector').value = preset.model;
+
+            showStatus(`已应用${presetName === 'highQuality' ? '高质量' : '快速'}预设`);
+        }
+
+        // 随机种子
+        function randomSeed() {
+            document.getElementById('seed').value = Math.floor(Math.random() * 2147483647);
+        }
+
+        // 更新进度条
+        function updateProgress(progress) {
+            document.getElementById('generation-progress').style.width = `${progress}%`;
+        }
+
+        // 图片生成主函数
+        async function generateImage() {
+            showStatus('准备生成...');
+            
+            // 收集参数
+            const params = {
+                prompt: document.getElementById('positive-prompt').value,
+                negative_prompt: document.getElementById('negative-prompt').value,
+                model: document.getElementById('model-selector').value,
+                sampler: document.getElementById('sampler').value,
+                steps: parseInt(document.getElementById('steps').value),
+                cfg_scale: parseFloat(document.getElementById('cfg').value),
+                seed: document.getElementById('seed').value,
+                width: document.getElementById('width').value,
+                height: document.getElementById('height').value,
+                batch_size: parseInt(document.getElementById('batch-count').value)
+            };
+
+            if (!params.prompt) {
+                showStatus('请输入提示词', 'error');
+                return;
+            }
+
+            try {
+                updateProgress(0);
+                showStatus('正在生成...');
+
+                // 构建API请求
+                const encodedPrompt = encodeURIComponent(
+                    `${params.prompt} --no ${params.negative_prompt} ` +
+                    `--w ${params.width} --h ${params.height} ` +
+                    `--seed ${params.seed} --steps ${params.steps}`
+                );
+
+                // 使用轮询的方式请求多个API
+                const images = [];
+                for (let i = 0; i < params.batch_size; i++) {
+                    updateProgress((i / params.batch_size) * 100);
+                    
+                    // 添加时间戳避免缓存
+                    const imageUrl = `${CONFIG.apiEndpoints.pollinations}${encodedPrompt}?t=${Date.now()}`;
+                    images.push(imageUrl);
+                    
+                    // 模拟生成延迟
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                }
+
+                // 显示生成结果
+                displayResults(images, params);
+                
+                updateProgress(100);
+                showStatus('生成完成！');
+                
+                // 保存到历史记录
+                saveToHistory(images[0], params);
+                
+            } catch (error) {
+                console.error('Generation error:', error);
+                showStatus('生成失败，请重试', 'error');
+                updateProgress(0);
+            }
+        }
+
+        // 显示生成结果
+        function displayResults(images, params) {
+            const container = document.getElementById('batch-results');
+            container.innerHTML = '';
+            
+            images.forEach(url => {
+                const col = document.createElement('div');
+                col.className = 'col-md-6 col-lg-4 mb-3';
+                col.innerHTML = `
+                    <div class="card">
+                        <img src="${url}" class="card-img-top" alt="生成的图片">
+                        <div class="card-body">
+                            <div class="btn-group w-100">
+                                <button class="btn btn-outline-primary" onclick="downloadImage('${url}')">
+                                    <i class="bi bi-download"></i>
+                                </button>
+                                <button class="btn btn-outline-primary" onclick="copyPrompt('${params.prompt}')">
+                                    <i class="bi bi-clipboard"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(col);
+            });
+
+            // 显示第一张图片在预览区
+            const previewImage = document.getElementById('preview-image');
+            previewImage.src = images[0];
+            previewImage.style.display = 'block';
+        }
+
+        // 保存到历史记录
+        function saveToHistory(imageUrl, params) {
+            const history = JSON.parse(localStorage.getItem('imageHistory') || '[]');
+            history.unshift({
+                url: imageUrl,
+                params: params,
+                timestamp: new Date().toISOString()
+            });
+            localStorage.setItem('imageHistory', JSON.stringify(history.slice(0, 50)));
+            updateHistoryDisplay();
+        }
+
+        // 更新历史记录显示
+        function updateHistoryDisplay() {
+            const history = JSON.parse(localStorage.getItem('imageHistory') || '[]');
+            const container = document.getElementById('history-list');
+            container.innerHTML = history.map(item => `
+                <div class="history-item" onclick="loadHistoryItem(${JSON.stringify(item)})">
+                    <img src="${item.url}" class="history-thumbnail" alt="历史记录缩略图">
+                    <div class="history-info">
+                        <small>${new Date(item.timestamp).toLocaleString()}</small>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 加载历史记录项
+        function loadHistoryItem(item) {
+            document.getElementById('positive-prompt').value = item.params.prompt;
+            document.getElementById('negative-prompt').value = item.params.negative_prompt;
+            document.getElementById('steps').value = item.params.steps;
+            document.getElementById('steps-value').textContent = item.params.steps;
+            document.getElementById('cfg').value = item.params.cfg_scale;
+            document.getElementById('cfg-value').textContent = item.params.cfg_scale;
+            document.getElementById('seed').value = item.params.seed;
+            document.getElementById('width').value = item.params.width;
+            document.getElementById('height').value = item.params.height;
+            
+            showStatus('已加载历史记录参数');
+        }
+
+        // 下载图片
+        function downloadImage(url) {
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `generated-${Date.now()}.png`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        // 复制提示词
+        function copyPrompt(prompt) {
+            navigator.clipboard.writeText(prompt).then(() => {
+                showStatus('提示词已复制');
+            });
+        }
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化标签页
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    switchTab(button.dataset.tab);
+                });
+            });
+
+            // 初始化滑块值显示
+            document.getElementById('steps').addEventListener('input', function() {
+                document.getElementById('steps-value').textContent = this.value;
+            });
+            document.getElementById('cfg').addEventListener('input', function() {
+                document.getElementById('cfg-value').textContent = this.value;
+            });
+
+            // 加载历史记录
+            updateHistoryDisplay();
+            
+            // 显示就绪状态
+            showStatus('系统就绪');
+        });
+    </script>
+</body>
+</html>
