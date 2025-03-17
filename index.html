@@ -1,155 +1,339 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>鱼子绘图 - AI绘画</title>
+    <title>鱼子绘图 Pro - Advanced AI Image Generation</title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
     <style>
+        :root {
+            --theme-color: #2d7af6;
+        }
         body {
             font-family: 'Microsoft YaHei', Arial, sans-serif;
-            background-color: #f5f5f5;
+            background-color: #f0f2f5;
+        }
+        .pro-container {
+            max-width: 1400px;
+            margin: 20px auto;
             padding: 20px;
         }
-        .container {
+        .pro-card {
             background: white;
-            padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            padding: 20px;
+            margin-bottom: 20px;
         }
-        .prompt-box {
+        .model-selector {
             background: #f8f9fa;
+            border: 1px solid #dee2e6;
             padding: 15px;
             border-radius: 8px;
             margin-bottom: 15px;
         }
-        .result-image {
-            max-width: 100%;
-            border-radius: 8px;
-            display: none;
-            margin-top: 20px;
-        }
-        .history-image {
+        .prompt-area {
             width: 100%;
-            height: 200px;
-            object-fit: cover;
+            min-height: 100px;
+            padding: 10px;
+            border: 1px solid #dee2e6;
             border-radius: 8px;
             margin-bottom: 10px;
+            font-family: 'Consolas', monospace;
+        }
+        .advanced-options {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .image-preview {
+            width: 100%;
+            max-height: 512px;
+            object-fit: contain;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        .preset-tag {
+            display: inline-block;
+            padding: 5px 10px;
+            margin: 5px;
+            background: #e9ecef;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .preset-tag:hover {
+            background: var(--theme-color);
+            color: white;
+        }
+        .progress-bar {
+            height: 6px;
+            border-radius: 3px;
+        }
+        .settings-group {
+            border-bottom: 1px solid #dee2e6;
+            padding: 10px 0;
+        }
+        .custom-range {
+            width: 100%;
+        }
+        .batch-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .batch-image {
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .batch-image:hover {
+            transform: scale(1.05);
+        }
+        .status-badge {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            padding: 10px 20px;
+            border-radius: 20px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            display: none;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- 标题 -->
-        <h1 class="text-center mb-4">🎨 鱼子绘图</h1>
-        
-        <!-- 提示词输入区 -->
-        <div class="prompt-box">
-            <h5>图片描述（英文效果更好）</h5>
-            <textarea class="form-control mb-3" id="prompt" rows="3" 
-                      placeholder="例如：a cute cat, high quality, detailed"></textarea>
-            
-            <h5>不需要的内容</h5>
-            <textarea class="form-control mb-3" id="negative-prompt" rows="2"
-                      placeholder="例如：low quality, bad anatomy, text"></textarea>
-            
-            <!-- 参数设置 -->
-            <div class="row">
-                <div class="col-md-4 mb-3">
-                    <label>图片大小</label>
-                    <select class="form-select" id="size">
-                        <option value="512x512">512 x 512</option>
-                        <option value="512x768">512 x 768</option>
-                        <option value="768x512">768 x 512</option>
-                    </select>
-                </div>
-                <div class="col-md-4 mb-3">
-                    <label>生成数量</label>
-                    <input type="number" class="form-control" id="count" value="1" min="1" max="4">
-                </div>
-                <div class="col-md-4 mb-3">
-                    <label>图片质量</label>
-                    <select class="form-select" id="quality">
-                        <option value="standard">标准</option>
-                        <option value="high">高质量</option>
-                    </select>
+    <!-- 状态提示 -->
+    <div id="status-badge" class="status-badge">
+        <i class="bi bi-circle-fill"></i> <span id="status-text">就绪</span>
+    </div>
+
+    <div class="pro-container">
+        <div class="row">
+            <!-- 左侧控制面板 -->
+            <div class="col-lg-8">
+                <div class="pro-card">
+                    <!-- 模型选择 -->
+                    <div class="model-selector">
+                        <h5><i class="bi bi-box"></i> 模型选择</h5>
+                        <select class="form-select" id="model-select">
+                            <option value="v1.5">Stable Diffusion v1.5</option>
+                            <option value="v2.1">Stable Diffusion v2.1</option>
+                            <option value="anime">Anything V4.5</option>
+                            <option value="realistic">Realistic Vision V4.0</option>
+                        </select>
+                    </div>
+
+                    <!-- 提示词区域 -->
+                    <div class="settings-group">
+                        <h5><i class="bi bi-pencil"></i> 提示词设置</h5>
+                        <textarea class="prompt-area" id="prompt" placeholder="正向提示词（支持权重语法，例如: (masterpiece:1.2), best quality, ultra-detailed...)"></textarea>
+                        <textarea class="prompt-area" id="negative-prompt" placeholder="反向提示词（例如: lowres, bad anatomy, text, watermark...）"></textarea>
+                        
+                        <!-- 提示词预设 -->
+                        <div class="preset-tags">
+                            <span class="preset-tag" onclick="addPreset('masterpiece, best quality')">品质提升</span>
+                            <span class="preset-tag" onclick="addPreset('detailed, ultra-detailed')">细节增强</span>
+                            <span class="preset-tag" onclick="addPreset('8k, HDR, cinematic lighting')">电影感</span>
+                        </div>
+                    </div>
+
+                    <!-- 高级设置 -->
+                    <div class="advanced-options">
+                        <h5><i class="bi bi-sliders"></i> 高级参数</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label>采样方法</label>
+                                <select class="form-select" id="sampler">
+                                    <option value="euler_a">Euler a</option>
+                                    <option value="dpm++">DPM++ 2M Karras</option>
+                                    <option value="ddim">DDIM</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label>采样步数: <span id="steps-value">20</span></label>
+                                <input type="range" class="custom-range" id="steps" min="1" max="50" value="20">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label>CFG Scale: <span id="cfg-value">7.0</span></label>
+                                <input type="range" class="custom-range" id="cfg" min="1" max="20" step="0.5" value="7.0">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label>种子</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="seed" value="-1">
+                                    <button class="btn btn-outline-secondary" onclick="randomizeSeed()">
+                                        <i class="bi bi-dice-5"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 尺寸设置 -->
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label>宽度</label>
+                                <select class="form-select" id="width">
+                                    <option value="512">512</option>
+                                    <option value="768">768</option>
+                                    <option value="1024">1024</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label>高度</label>
+                                <select class="form-select" id="height">
+                                    <option value="512">512</option>
+                                    <option value="768">768</option>
+                                    <option value="1024">1024</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label>批次数量</label>
+                                <input type="number" class="form-control" id="batch-size" value="1" min="1" max="4">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 生成按钮 -->
+                    <div class="d-grid gap-2 mt-3">
+                        <button class="btn btn-primary btn-lg" onclick="generateImages()">
+                            <i class="bi bi-magic"></i> 生成图片
+                        </button>
+                    </div>
                 </div>
             </div>
-            
-            <!-- 生成按钮 -->
-            <button class="btn btn-primary w-100" onclick="generateImage()">生成图片</button>
-        </div>
 
-        <!-- 状态显示 -->
-        <div class="alert alert-info" id="status" style="display: none;">
-            正在生成图片，请稍候...
-        </div>
-
-        <!-- 结果显示 -->
-        <div id="result" class="text-center">
-            <img id="result-image" class="result-image" alt="生成的图片">
-        </div>
-
-        <!-- 历史记录 -->
-        <div class="mt-4">
-            <h3>历史记录</h3>
-            <div class="row" id="history"></div>
+            <!-- 右侧预览面板 -->
+            <div class="col-lg-4">
+                <div class="pro-card">
+                    <h5><i class="bi bi-image"></i> 预览</h5>
+                    <div id="preview-container">
+                        <img id="preview-image" class="image-preview" style="display: none;">
+                    </div>
+                    <div class="batch-grid" id="batch-grid"></div>
+                    
+                    <!-- 图片信息 -->
+                    <div class="mt-3" id="image-info" style="display: none;">
+                        <h6>图片信息</h6>
+                        <small class="text-muted" id="image-details"></small>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    
     <script>
-        // 生成图片函数
-        async function generateImage() {
-            const status = document.getElementById('status');
-            const resultImage = document.getElementById('result-image');
+        // 更新范围滑块值显示
+        document.getElementById('steps').addEventListener('input', function() {
+            document.getElementById('steps-value').textContent = this.value;
+        });
+        document.getElementById('cfg').addEventListener('input', function() {
+            document.getElementById('cfg-value').textContent = this.value;
+        });
+
+        // 添加预设提示词
+        function addPreset(preset) {
+            const promptArea = document.getElementById('prompt');
+            promptArea.value = promptArea.value ? `${promptArea.value}, ${preset}` : preset;
+        }
+
+        // 随机种子
+        function randomizeSeed() {
+            document.getElementById('seed').value = Math.floor(Math.random() * 2147483647);
+        }
+
+        // 显示状态
+        function showStatus(message, type = 'info') {
+            const badge = document.getElementById('status-badge');
+            const text = document.getElementById('status-text');
+            text.textContent = message;
+            badge.style.display = 'block';
+            badge.style.backgroundColor = type === 'error' ? '#dc3545' : 'rgba(0,0,0,0.8)';
             
-            // 显示状态
-            status.style.display = 'block';
-            status.textContent = '正在生成图片，请稍候...';
-            resultImage.style.display = 'none';
-
-            try {
-                // 获取用户输入
-                const prompt = document.getElementById('prompt').value;
-                const negativePrompt = document.getElementById('negative-prompt').value;
-                const size = document.getElementById('size').value;
-                const [width, height] = size.split('x').map(Number);
-
-                // 使用 Pollinations API 生成图片
-                const encodedPrompt = encodeURIComponent(
-                    `${prompt} --no ${negativePrompt} --ar ${width}:${height}`
-                );
-                const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}`;
-
-                // 显示图片
-                resultImage.src = imageUrl;
-                resultImage.style.display = 'block';
-                status.textContent = '生成完成！';
-
-                // 保存到历史记录
-                saveToHistory(imageUrl, prompt);
-
-            } catch (error) {
-                status.textContent = '生成失败，请重试';
-                console.error('Error:', error);
+            if (type !== 'error') {
+                setTimeout(() => {
+                    badge.style.display = 'none';
+                }, 3000);
             }
         }
 
-        // 保存历史记录
-        function saveToHistory(imageUrl, prompt) {
-            const history = document.getElementById('history');
-            const col = document.createElement('div');
-            col.className = 'col-md-3 mb-3';
-            col.innerHTML = `
-                <img src="${imageUrl}" class="history-image" alt="历史图片">
-                <small class="text-muted">${prompt.substring(0, 50)}...</small>
-            `;
-            history.insertBefore(col, history.firstChild);
+        // 生成图片
+        async function generateImages() {
+            showStatus('正在准备生成...');
+            
+            const params = {
+                prompt: document.getElementById('prompt').value,
+                negative_prompt: document.getElementById('negative-prompt').value,
+                model: document.getElementById('model-select').value,
+                sampler: document.getElementById('sampler').value,
+                steps: document.getElementById('steps').value,
+                cfg_scale: document.getElementById('cfg').value,
+                seed: document.getElementById('seed').value,
+                width: document.getElementById('width').value,
+                height: document.getElementById('height').value,
+                batch_size: document.getElementById('batch-size').value
+            };
+
+            try {
+                showStatus('正在生成图片...');
+                
+                // 使用 Pollinations.ai API（免费）
+                const encodedPrompt = encodeURIComponent(
+                    `${params.prompt} --no ${params.negative_prompt} --w ${params.width} --h ${params.height}`
+                );
+                const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}`;
+
+                // 显示生成的图片
+                if (params.batch_size === 1) {
+                    const previewImage = document.getElementById('preview-image');
+                    previewImage.src = imageUrl;
+                    previewImage.style.display = 'block';
+                } else {
+                    const batchGrid = document.getElementById('batch-grid');
+                    batchGrid.innerHTML = '';
+                    
+                    for (let i = 0; i < params.batch_size; i++) {
+                        const img = document.createElement('img');
+                        img.src = `${imageUrl}?seed=${Math.random()}`;
+                        img.className = 'batch-image';
+                        batchGrid.appendChild(img);
+                    }
+                }
+
+                // 显示图片信息
+                document.getElementById('image-info').style.display = 'block';
+                document.getElementById('image-details').innerHTML = `
+                    模型: ${params.model}<br>
+                    采样器: ${params.sampler}<br>
+                    步数: ${params.steps}<br>
+                    CFG Scale: ${params.cfg_scale}<br>
+                    种子: ${params.seed}<br>
+                    尺寸: ${params.width}x${params.height}
+                `;
+
+                showStatus('生成完成！');
+
+            } catch (error) {
+                console.error('Error:', error);
+                showStatus('生成失败，请重试', 'error');
+            }
+        }
+
+        // 页面加载完成
+        window.onload = function() {
+            showStatus('系统就绪');
         }
     </script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
