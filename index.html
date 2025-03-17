@@ -3,13 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="author" content="liboyu666">
+    <meta name="description" content="Advanced AI Art Creation Tool">
+    <meta name="updated-date" content="2025-03-17">
+    
     <title>鱼子绘图 Pro - Advanced AI Art Creation | Contact: 2116498608@qq.com</title>
     
     <!-- 外部依赖 -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- 全局样式 -->
     <style>
+            /* 全局变量 */
         :root {
             --primary-color: #94A684;    /* 奶油绿 */
             --secondary-color: #E4E4D0;  /* 淡奶油 */
@@ -22,6 +29,7 @@
             --sidebar-width: 300px;
         }
 
+        /* 基础样式 */
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background-color: var(--background-color);
@@ -35,6 +43,25 @@
         .app-container {
             display: flex;
             min-height: 100vh;
+        }
+
+        /* 状态提示 */
+        .status-badge {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 16px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            z-index: 1000;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         /* 左侧边栏 */
@@ -110,39 +137,120 @@
             box-shadow: var(--shadow);
         }
 
-        /* 输入区域 */
-        .prompt-textarea {
-            width: 100%;
-            min-height: 120px;
-            padding: 12px;
-            border: 1px solid var(--secondary-color);
-            border-radius: var(--border-radius);
-            font-family: 'Inter', monospace;
-            resize: vertical;
-            margin-bottom: 15px;
-            transition: all 0.3s ease;
-        }
-
-        .prompt-textarea:focus {
-            border-color: var(--primary-color);
-            outline: none;
-            box-shadow: 0 0 0 2px rgba(148, 166, 132, 0.2);
-        }
-
-        /* 图片生成区域 */
-        .generation-area {
+        /* 上传区域 */
+        .upload-container {
             border: 2px dashed var(--secondary-color);
             border-radius: var(--border-radius);
-            padding: 40px;
+            padding: 20px;
             text-align: center;
             transition: all 0.3s ease;
-            margin-bottom: 20px;
-            background: white;
         }
 
-        .generation-area:hover {
+        .upload-container:hover {
             border-color: var(--primary-color);
             background: rgba(148, 166, 132, 0.05);
+        }
+
+        .upload-box {
+            cursor: pointer;
+            padding: 40px;
+        }
+
+        .upload-box i {
+            font-size: 48px;
+            color: var(--primary-color);
+        }
+
+        /* 画布工具 */
+        .canvas-wrapper {
+            position: relative;
+            margin-top: 20px;
+        }
+
+        .tool-panel {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            border-radius: 20px;
+            padding: 5px;
+            box-shadow: var(--shadow);
+            display: flex;
+            gap: 5px;
+        }
+
+        .tool-button {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 18px;
+            background: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .tool-button:hover,
+        .tool-button.active {
+            background: var(--secondary-color);
+        }
+
+        /* 滑块样式 */
+        .range-slider {
+            width: 100%;
+            height: 4px;
+            background: var(--secondary-color);
+            border-radius: 2px;
+            -webkit-appearance: none;
+            margin: 10px 0;
+        }
+
+        .range-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 0 0 1px var(--primary-color);
+        }
+
+        /* 风格选择网格 */
+        .style-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .style-item {
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .style-item:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .style-item img {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+        }
+
+        .style-item span {
+            display: block;
+            padding: 8px;
+            text-align: center;
+            background: white;
+            font-size: 14px;
         }
 
         /* 按钮样式 */
@@ -167,96 +275,41 @@
             transform: translateY(-1px);
         }
 
-        .action-button i {
-            font-size: 1.2em;
-        }
-
-        /* 滑块样式 */
-        .range-slider {
+        /* 进度条 */
+        .progress-container {
             width: 100%;
             height: 4px;
             background: var(--secondary-color);
             border-radius: 2px;
-            -webkit-appearance: none;
+            overflow: hidden;
+            margin-top: 10px;
         }
 
-        .range-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
+        .progress-bar {
+            width: 0%;
+            height: 100%;
             background: var(--primary-color);
-            cursor: pointer;
-            border: 2px solid white;
-            box-shadow: 0 0 0 1px var(--primary-color);
+            transition: width 0.3s ease;
         }
 
-        /* 图片预览 */
-        .preview-container {
-            position: relative;
-            margin-top: 20px;
-        }
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            :root {
+                --sidebar-width: 100%;
+            }
 
-        .preview-image {
-            width: 100%;
-            border-radius: var(--border-radius);
-            display: none;
-        }
+            .sidebar {
+                position: relative;
+                height: auto;
+            }
 
-        /* 工具提示 */
-        .tooltip {
-            position: relative;
-            display: inline-block;
-        }
+            .main-content {
+                margin-left: 0;
+            }
 
-        .tooltip .tooltip-text {
-            visibility: hidden;
-            width: 200px;
-            background-color: rgba(0,0,0,0.8);
-            color: white;
-            text-align: center;
-            padding: 5px;
-            border-radius: 6px;
-            position: absolute;
-            z-index: 1;
-            bottom: 125%;
-            left: 50%;
-            margin-left: -100px;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .tooltip:hover .tooltip-text {
-            visibility: visible;
-            opacity: 1;
-        }
-
-        /* 历史记录 */
-        .history-container {
-            max-height: 400px;
-            overflow-y: auto;
-        }
-
-        .history-item {
-            display: flex;
-            align-items: center;
-            padding: 10px;
-            border-radius: var(--border-radius);
-            margin-bottom: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .history-item:hover {
-            background: var(--secondary-color);
-        }
-
-        .history-thumbnail {
-            width: 60px;
-            height: 60px;
-            border-radius: var(--border-radius);
-            object-fit: cover;
-            margin-right: 10px;
+            .app-container {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
@@ -270,7 +323,7 @@
         <!-- 左侧边栏 -->
         <div class="sidebar">
             <h4>🎨 鱼子绘图 Pro</h4>
-            <p class="text-muted">Contact: 2116498608@qq.com</p>
+            <p class="text-muted">Author: liboyu666<br>Contact: 2116498608@qq.com<br>Updated: 2025-03-17</p>
             
             <!-- 模型信息 -->
             <div class="parameter-panel">
@@ -330,19 +383,11 @@
                     <button class="tab-button" data-tab="settings">设置</button>
                 </div>
 
-                <!-- 主要内容区域 -->
-                <div class="tab-content" id="tab-content">
+                <div class="tab-content">
                     <!-- 文生图面板 -->
                     <div class="parameter-panel" id="txt2img-panel">
-                        <!-- 提示词区域 -->
                         <div class="mb-4">
-                            <label class="form-label">
-                                正向提示词
-                                <span class="tooltip">
-                                    <i class="bi bi-question-circle"></i>
-                                    <span class="tooltip-text">描述你想要的图片内容</span>
-                                </span>
-                            </label>
+                            <label class="form-label">正向提示词</label>
                             <textarea class="prompt-textarea" id="positive-prompt" 
                                     placeholder="masterpiece, best quality, ultra-detailed..."></textarea>
 
@@ -351,7 +396,6 @@
                                     placeholder="lowres, bad anatomy, text, watermark..."></textarea>
                         </div>
 
-                        <!-- 生成参数 -->
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">采样方法</label>
@@ -414,12 +458,31 @@
                             </div>
                         </div>
 
-                        <!-- 生成按钮 -->
-                        <div class="d-grid gap-2">
-                            <button class="action-button" onclick="generateImage()">
+                        <div class="d-grid">
+                            <button class="action-button" onclick="generateImage('txt2img')">
                                 <i class="bi bi-magic"></i> 开始生成
                             </button>
                         </div>
+                    </div>
+
+                    <!-- 图生图面板 -->
+                    <div class="parameter-panel" id="img2img-panel" style="display: none;">
+                        <!-- 在前面已经定义过了 -->
+                    </div>
+
+                    <!-- 局部重绘面板 -->
+                    <div class="parameter-panel" id="inpaint-panel" style="display: none;">
+                        <!-- 在前面已经定义过了 -->
+                    </div>
+
+                    <!-- 后期处理面板 -->
+                    <div class="parameter-panel" id="extras-panel" style="display: none;">
+                        <!-- 在前面已经定义过了 -->
+                    </div>
+
+                    <!-- 设置面板 -->
+                    <div class="parameter-panel" id="settings-panel" style="display: none;">
+                        <!-- 在前面已经定义过了 -->
                     </div>
 
                     <!-- 预览区域 -->
@@ -434,11 +497,17 @@
             </div>
         </div>
     </div>
-        <!-- JavaScript 代码 -->
+       <!-- JavaScript 依赖 -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- 核心功能实现 -->
     <script>
-        // 全局配置
+        // 全局配置和工具类
         const CONFIG = {
+            version: '1.0.0',
+            lastUpdated: '2025-03-17',
+            author: 'liboyu666',
+            contact: '2116498608@qq.com',
             apiEndpoints: {
                 pollinations: 'https://image.pollinations.ai/prompt/',
                 lexica: 'https://lexica.art/api/v1/search',
@@ -464,256 +533,301 @@
             }
         };
 
-        // 状态管理
-        function showStatus(message, type = 'info') {
-            const badge = document.getElementById('status-badge');
-            const text = document.getElementById('status-text');
-            text.textContent = message;
-            badge.style.display = 'block';
+        // 工具函数
+        const Utils = {
+            delay: ms => new Promise(resolve => setTimeout(resolve, ms)),
             
-            if (type === 'error') {
-                badge.style.backgroundColor = 'rgba(220, 53, 69, 0.9)';
-                badge.style.color = 'white';
-            } else {
-                badge.style.backgroundColor = 'rgba(255, 255, 255, 0.9)';
-                badge.style.color = 'var(--text-color)';
-            }
+            randomInt: (min, max) => Math.floor(Math.random() * (max - min + 1)) + min,
             
-            if (type !== 'error') {
-                setTimeout(() => {
-                    badge.style.display = 'none';
-                }, 3000);
+            formatDate: date => {
+                return new Date(date).toLocaleString('zh-CN', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            },
+            
+            showToast: (message, type = 'info') => {
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.textContent = message;
+                document.body.appendChild(toast);
+                setTimeout(() => toast.remove(), 3000);
             }
-        }
+        };
 
-        // 标签页切换
-        function switchTab(tabName) {
-            const tabs = document.querySelectorAll('.tab-button');
-            tabs.forEach(tab => {
-                if (tab.dataset.tab === tabName) {
-                    tab.classList.add('active');
-                } else {
-                    tab.classList.remove('active');
+        // API处理类
+        class APIHandler {
+            static async callAPI(endpoint, params) {
+                try {
+                    const response = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(params)
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`API error: ${response.status}`);
+                    }
+                    
+                    return await response.json();
+                } catch (error) {
+                    console.error('API call failed:', error);
+                    throw error;
                 }
-            });
-
-            // 更新内容区域
-            updateTabContent(tabName);
-        }
-
-        // 更新标签页内容
-        function updateTabContent(tabName) {
-            const content = document.getElementById('tab-content');
-            // 这里可以根据不同的标签页名称加载不同的内容
-            showStatus(`切换到${tabName}模式`);
-        }
-
-        // 应用预设
-        function applyPreset(presetName) {
-            const preset = CONFIG.presets[presetName];
-            if (!preset) return;
-
-            // 应用预设参数
-            document.getElementById('steps').value = preset.steps;
-            document.getElementById('steps-value').textContent = preset.steps;
-            
-            document.getElementById('cfg').value = preset.cfgScale;
-            document.getElementById('cfg-value').textContent = preset.cfgScale;
-            
-            document.getElementById('sampler').value = preset.sampler;
-            document.getElementById('width').value = preset.width;
-            document.getElementById('height').value = preset.height;
-            document.getElementById('model-selector').value = preset.model;
-
-            showStatus(`已应用${presetName === 'highQuality' ? '高质量' : '快速'}预设`);
-        }
-
-        // 随机种子
-        function randomSeed() {
-            document.getElementById('seed').value = Math.floor(Math.random() * 2147483647);
-        }
-
-        // 更新进度条
-        function updateProgress(progress) {
-            document.getElementById('generation-progress').style.width = `${progress}%`;
-        }
-
-        // 图片生成主函数
-        async function generateImage() {
-            showStatus('准备生成...');
-            
-            // 收集参数
-            const params = {
-                prompt: document.getElementById('positive-prompt').value,
-                negative_prompt: document.getElementById('negative-prompt').value,
-                model: document.getElementById('model-selector').value,
-                sampler: document.getElementById('sampler').value,
-                steps: parseInt(document.getElementById('steps').value),
-                cfg_scale: parseFloat(document.getElementById('cfg').value),
-                seed: document.getElementById('seed').value,
-                width: document.getElementById('width').value,
-                height: document.getElementById('height').value,
-                batch_size: parseInt(document.getElementById('batch-count').value)
-            };
-
-            if (!params.prompt) {
-                showStatus('请输入提示词', 'error');
-                return;
             }
 
-            try {
-                updateProgress(0);
-                showStatus('正在生成...');
+            static async generateImage(params) {
+                // 多API备选策略
+                const apis = [
+                    {
+                        name: 'pollinations',
+                        call: async () => {
+                            const encodedPrompt = encodeURIComponent(
+                                `${params.prompt} --no ${params.negative_prompt} ` +
+                                `--w ${params.width} --h ${params.height} ` +
+                                `--seed ${params.seed} --steps ${params.steps}`
+                            );
+                            return `${CONFIG.apiEndpoints.pollinations}${encodedPrompt}`;
+                        }
+                    },
+                    {
+                        name: 'prodia',
+                        call: async () => {
+                            return await APIHandler.callAPI(CONFIG.apiEndpoints.prodia, params);
+                        }
+                    }
+                ];
 
-                // 构建API请求
-                const encodedPrompt = encodeURIComponent(
-                    `${params.prompt} --no ${params.negative_prompt} ` +
-                    `--w ${params.width} --h ${params.height} ` +
-                    `--seed ${params.seed} --steps ${params.steps}`
-                );
-
-                // 使用轮询的方式请求多个API
-                const images = [];
-                for (let i = 0; i < params.batch_size; i++) {
-                    updateProgress((i / params.batch_size) * 100);
-                    
-                    // 添加时间戳避免缓存
-                    const imageUrl = `${CONFIG.apiEndpoints.pollinations}${encodedPrompt}?t=${Date.now()}`;
-                    images.push(imageUrl);
-                    
-                    // 模拟生成延迟
-                    await new Promise(resolve => setTimeout(resolve, 1000));
+                for (const api of apis) {
+                    try {
+                        console.log(`Trying ${api.name}...`);
+                        return await api.call();
+                    } catch (error) {
+                        console.warn(`${api.name} failed:`, error);
+                        continue;
+                    }
                 }
 
-                // 显示生成结果
-                displayResults(images, params);
-                
-                updateProgress(100);
-                showStatus('生成完成！');
-                
-                // 保存到历史记录
-                saveToHistory(images[0], params);
-                
-            } catch (error) {
-                console.error('Generation error:', error);
-                showStatus('生成失败，请重试', 'error');
-                updateProgress(0);
+                throw new Error('All APIs failed');
             }
         }
 
-        // 显示生成结果
-        function displayResults(images, params) {
-            const container = document.getElementById('batch-results');
-            container.innerHTML = '';
-            
-            images.forEach(url => {
-                const col = document.createElement('div');
-                col.className = 'col-md-6 col-lg-4 mb-3';
-                col.innerHTML = `
-                    <div class="card">
-                        <img src="${url}" class="card-img-top" alt="生成的图片">
-                        <div class="card-body">
-                            <div class="btn-group w-100">
-                                <button class="btn btn-outline-primary" onclick="downloadImage('${url}')">
-                                    <i class="bi bi-download"></i>
-                                </button>
-                                <button class="btn btn-outline-primary" onclick="copyPrompt('${params.prompt}')">
-                                    <i class="bi bi-clipboard"></i>
-                                </button>
+        // 图片处理器基类
+        class ImageProcessor {
+            constructor(containerId) {
+                this.container = document.getElementById(containerId);
+                this.setupEventListeners();
+            }
+
+            setupEventListeners() {
+                // 子类实现具体的事件监听
+            }
+
+            async generate() {
+                // 子类实现具体的生成逻辑
+            }
+
+            updateProgress(progress) {
+                document.getElementById('generation-progress').style.width = `${progress}%`;
+            }
+
+            showStatus(message, type = 'info') {
+                const badge = document.getElementById('status-badge');
+                const text = document.getElementById('status-text');
+                text.textContent = message;
+                badge.style.display = 'block';
+                
+                badge.className = `status-badge ${type}`;
+                
+                if (type !== 'error') {
+                    setTimeout(() => {
+                        badge.style.display = 'none';
+                    }, 3000);
+                }
+            }
+        }
+
+        // 文生图处理器
+        class Txt2ImgProcessor extends ImageProcessor {
+            constructor() {
+                super('txt2img-panel');
+            }
+
+            async generate() {
+                try {
+                    this.showStatus('准备生成...');
+                    this.updateProgress(0);
+
+                    const params = this.collectParams();
+                    if (!this.validateParams(params)) {
+                        return;
+                    }
+
+                    this.showStatus('正在生成...');
+                    const result = await APIHandler.generateImage(params);
+                    
+                    this.displayResults([result], params);
+                    this.updateProgress(100);
+                    this.showStatus('生成完成！');
+                    
+                    this.saveToHistory(result, params);
+
+                } catch (error) {
+                    console.error('Generation error:', error);
+                    this.showStatus('生成失败，请重试', 'error');
+                    this.updateProgress(0);
+                }
+            }
+
+            collectParams() {
+                return {
+                    prompt: document.getElementById('positive-prompt').value,
+                    negative_prompt: document.getElementById('negative-prompt').value,
+                    model: document.getElementById('model-selector').value,
+                    sampler: document.getElementById('sampler').value,
+                    steps: parseInt(document.getElementById('steps').value),
+                    cfg_scale: parseFloat(document.getElementById('cfg').value),
+                    seed: document.getElementById('seed').value || -1,
+                    width: document.getElementById('width').value,
+                    height: document.getElementById('height').value,
+                    batch_size: parseInt(document.getElementById('batch-count').value)
+                };
+            }
+
+            validateParams(params) {
+                if (!params.prompt) {
+                    this.showStatus('请输入提示词', 'error');
+                    return false;
+                }
+                return true;
+            }
+
+            displayResults(images, params) {
+                const container = document.getElementById('batch-results');
+                container.innerHTML = '';
+                
+                images.forEach(url => {
+                    const col = document.createElement('div');
+                    col.className = 'col-md-6 col-lg-4 mb-3';
+                    col.innerHTML = `
+                        <div class="card">
+                            <img src="${url}" class="card-img-top" alt="生成的图片">
+                            <div class="card-body">
+                                <div class="btn-group w-100">
+                                    <button class="btn btn-outline-primary" onclick="downloadImage('${url}')">
+                                        <i class="bi bi-download"></i>
+                                    </button>
+                                    <button class="btn btn-outline-primary" onclick="copyPrompt('${params.prompt}')">
+                                        <i class="bi bi-clipboard"></i>
+                                    </button>
+                                    <button class="btn btn-outline-primary" onclick="editImage('${url}')">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                `;
-                container.appendChild(col);
-            });
-
-            // 显示第一张图片在预览区
-            const previewImage = document.getElementById('preview-image');
-            previewImage.src = images[0];
-            previewImage.style.display = 'block';
-        }
-
-        // 保存到历史记录
-        function saveToHistory(imageUrl, params) {
-            const history = JSON.parse(localStorage.getItem('imageHistory') || '[]');
-            history.unshift({
-                url: imageUrl,
-                params: params,
-                timestamp: new Date().toISOString()
-            });
-            localStorage.setItem('imageHistory', JSON.stringify(history.slice(0, 50)));
-            updateHistoryDisplay();
-        }
-
-        // 更新历史记录显示
-        function updateHistoryDisplay() {
-            const history = JSON.parse(localStorage.getItem('imageHistory') || '[]');
-            const container = document.getElementById('history-list');
-            container.innerHTML = history.map(item => `
-                <div class="history-item" onclick="loadHistoryItem(${JSON.stringify(item)})">
-                    <img src="${item.url}" class="history-thumbnail" alt="历史记录缩略图">
-                    <div class="history-info">
-                        <small>${new Date(item.timestamp).toLocaleString()}</small>
-                    </div>
-                </div>
-            `).join('');
-        }
-
-        // 加载历史记录项
-        function loadHistoryItem(item) {
-            document.getElementById('positive-prompt').value = item.params.prompt;
-            document.getElementById('negative-prompt').value = item.params.negative_prompt;
-            document.getElementById('steps').value = item.params.steps;
-            document.getElementById('steps-value').textContent = item.params.steps;
-            document.getElementById('cfg').value = item.params.cfg_scale;
-            document.getElementById('cfg-value').textContent = item.params.cfg_scale;
-            document.getElementById('seed').value = item.params.seed;
-            document.getElementById('width').value = item.params.width;
-            document.getElementById('height').value = item.params.height;
-            
-            showStatus('已加载历史记录参数');
-        }
-
-        // 下载图片
-        function downloadImage(url) {
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `generated-${Date.now()}.png`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-        }
-
-        // 复制提示词
-        function copyPrompt(prompt) {
-            navigator.clipboard.writeText(prompt).then(() => {
-                showStatus('提示词已复制');
-            });
-        }
-
-        // 初始化
-        document.addEventListener('DOMContentLoaded', function() {
-            // 初始化标签页
-            document.querySelectorAll('.tab-button').forEach(button => {
-                button.addEventListener('click', () => {
-                    switchTab(button.dataset.tab);
+                    `;
+                    container.appendChild(col);
                 });
-            });
 
-            // 初始化滑块值显示
-            document.getElementById('steps').addEventListener('input', function() {
-                document.getElementById('steps-value').textContent = this.value;
-            });
-            document.getElementById('cfg').addEventListener('input', function() {
-                document.getElementById('cfg-value').textContent = this.value;
-            });
+                // 更新预览
+                const previewImage = document.getElementById('preview-image');
+                previewImage.src = images[0];
+                previewImage.style.display = 'block';
+            }
 
-            // 加载历史记录
-            updateHistoryDisplay();
-            
-            // 显示就绪状态
-            showStatus('系统就绪');
+            saveToHistory(imageUrl, params) {
+                const history = JSON.parse(localStorage.getItem('imageHistory') || '[]');
+                history.unshift({
+                    url: imageUrl,
+                    params: params,
+                    timestamp: new Date().toISOString(),
+                    type: 'txt2img'
+                });
+                localStorage.setItem('imageHistory', JSON.stringify(history.slice(0, 50)));
+                updateHistoryDisplay();
+            }
+        }
+
+        // 主程序入口
+        class App {
+            constructor() {
+                this.initializeProcessors();
+                this.initializeUI();
+                this.loadSettings();
+            }
+
+            initializeProcessors() {
+                this.txt2img = new Txt2ImgProcessor();
+                // 其他处理器初始化...
+            }
+
+            initializeUI() {
+                // 标签页切换
+                document.querySelectorAll('.tab-button').forEach(button => {
+                    button.addEventListener('click', () => {
+                        this.switchTab(button.dataset.tab);
+                    });
+                });
+
+                // 滑块值更新
+                document.getElementById('steps').addEventListener('input', e => {
+                    document.getElementById('steps-value').textContent = e.target.value;
+                });
+                document.getElementById('cfg').addEventListener('input', e => {
+                    document.getElementById('cfg-value').textContent = e.target.value;
+                });
+
+                // 加载历史记录
+                this.updateHistoryDisplay();
+            }
+
+            switchTab(tabName) {
+                document.querySelectorAll('.tab-button').forEach(tab => {
+                    tab.classList.toggle('active', tab.dataset.tab === tabName);
+                });
+
+                document.querySelectorAll('.parameter-panel[id$="-panel"]').forEach(panel => {
+                    panel.style.display = panel.id === `${tabName}-panel` ? 'block' : 'none';
+                });
+            }
+
+            updateHistoryDisplay() {
+                const history = JSON.parse(localStorage.getItem('imageHistory') || '[]');
+                const container = document.getElementById('history-list');
+                container.innerHTML = history.map(item => `
+                    <div class="history-item" onclick="loadHistoryItem(${JSON.stringify(item)})">
+                        <img src="${item.url}" class="history-thumbnail" alt="历史记录缩略图">
+                        <div class="history-info">
+                            <small>${Utils.formatDate(item.timestamp)}</small>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            loadSettings() {
+                const settings = JSON.parse(localStorage.getItem('appSettings') || '{}');
+                // 应用设置...
+            }
+        }
+
+        // 初始化应用
+        window.addEventListener('DOMContentLoaded', () => {
+            window.app = new App();
+            window.showStatus('系统就绪');
         });
+
+        // 错误处理
+        window.onerror = function(msg, url, lineNo, columnNo, error) {
+            console.error('Error:', msg, '\nURL:', url, '\nLine:', lineNo, '\nColumn:', columnNo, '\nError object:', error);
+            window.showStatus('发生错误，请检查控制台', 'error');
+            return false;
+        };
     </script>
 </body>
-</html>
+</html> 
